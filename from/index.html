@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <!-- Modal -->
+
+    <div class="container">
+      <button
+        type="button"
+        class="btn1 btn-primary"
+        data-toggle="modal1"
+        data-target="#basicExampleModal"
+      >
+        Regsitrar
+      </button>
+      <table id="tabla">
+        <thead>
+          <tr>
+            <th>dni</th>
+            <th>nombre</th>
+            <th>edad</th>
+            <th>Operaciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="modal fade">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form method="POST" name="fconsulta" id="fconsulta">
+            <div class="modal-header">
+              <h5 class="modal-title">Modal title</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" name="id" id="id" />
+              <br />
+              nombre
+              <input type="text" name="nombre" id="nombre" />
+              <br />
+              edad
+              <input type="number" name="edad" id="edad" />
+              <br />
+              <br />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                onclick="Modificarpersona();"
+                class="btn btn-primary"
+              >
+                Modificar
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Cerrar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal1 fade">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form method="POST" name="fconsulta1" id="fconsulta1">
+            <div class="modal-header">
+              <h5 class="modal-title">Registro</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <br />
+              dni
+              <input type="text" name="dni" id="dni" />
+
+              <br />
+              nombre
+              <input type="text" name="nombre" id="nombre" />
+              <br />
+              edad
+              <input type="number" name="edad" id="edad" />
+              <br />
+              <br />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary">
+                Modificar
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Guardar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    $(document).ready(function () {
+      listadoEmpleado()
+    })
+
+    function listadoEmpleado() {
+      $.ajax({
+        url: 'http://127.0.0.1:8000/api/verEmpleados',
+        method: 'GET',
+        dataType: 'JSON',
+        //data:$('#tabla').serialize(),
+        success: function (data) {
+          if (data.res === true) {
+            const inf = data.data
+            $.each(inf, function (i, item) {
+              $('#tabla tbody').append(`<tr>
+                                           <td>${item.dni}</td>
+                                            <td>${item.nombre}</td>
+                                            <td>${item.edad}</td>
+                                            <td> <button class="btn" data-json='${JSON.stringify(
+                                              item,
+                                            )}' >Editar </button> </td>
+                                             <td> <button class="btne" data-json='${JSON.stringify(
+                                               item,
+                                             )}' >Eliminar </button> </td>
+                                          </tr>`)
+            })
+          }
+        },
+      })
+    }
+
+    $('button').on('submit', function (ev) {
+      ev.preventDefault()
+      $('#tabla tbody').html('')
+    })
+
+    //eliminar
+    $(document).on('click', '.btne', function (ev) {
+      let usuario = JSON.parse($(this).attr('data-json'))
+      //console.log(JSON.parse(usuario));
+
+      //var obj = JSON.parse(usuario);
+      //var parent = $(this).parent().attr('id');
+      var id = usuario['id']
+
+      //alert("hola");
+
+      var dataString = id
+
+      //alert(dataString);
+
+      $.ajax({
+        type: 'POST',
+        url: 'http://127.0.0.1:8000/api/DeleteEmpleado',
+        data: { id: id },
+        success: function (response) {
+          // console.log('respuesta>>>' + response)
+          if (response.msj === 1) {
+            alert('se eliminado')
+            location.reload()
+          } else {
+            alert('error')
+          }
+          // location.reload()
+          /*       
+                $('#btne').empty();
+                $('#delete-ok').append('<div>Se ha eliminado correctamente el servicio con id='+service+'.</div>').fadeIn("slow");
+                $('#'+parent).remove();  */
+        },
+      })
+    })
+
+    $(document).on('click', '.btn', function (ev) {
+      let usuario = JSON.parse($(this).attr('data-json'))
+      //console.log(JSON.parse(usuario));
+      $('.modal input[name="nombre"]').val(usuario.nombre)
+
+      /* var genero=null;
+  if(usuario.sexo==1){
+    genero="masculino";
+  }else{
+    genero="femenino";
+  } */
+      $('.modal select[name="sexo"]').val(usuario.sexo)
+      $('.modal input[name="edad"]').val(usuario.edad)
+      $('.modal input[name="id"]').val(usuario.id)
+
+      $('.modal').modal('show')
+    })
+    // $('.btn').on('click',function(ev){
+    //    console.log($(this));
+
+    //}) ;
+
+    function Editar() {
+      console.log($(this))
+
+      // $('.modal').modal('show')
+    }
+
+    function Modificarpersona() {
+      $.ajax({
+        url: 'http://127.0.0.1:8000/api/ActualizarEmpleado',
+        method: 'POST',
+        data: $('#fconsulta').serialize(),
+
+        success: function (data) {
+          var res = data
+
+          //   console.log(res.msj)
+          if (res.msj === 1) {
+            alert('Actualizado')
+            //   listadoEmpleado()
+            location.reload()
+          }
+          // $('#verConsultaExamen').html(res);
+          //  alert(data)
+          // location.reload()
+        },
+      })
+    }
+
+    $(document).on('click', '.btn1', function (ev) {
+      //alert('holaaa')
+      // $('.modal1').modal('show')
+
+      // window.location('registrar.html');
+      window.location.href = 'registrar.html'
+    })
+  </script>
+</html>

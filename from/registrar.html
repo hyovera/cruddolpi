@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="modal-content">
+      <form method="POST" name="fconsulta1" id="fconsulta1">
+        <div class="modal-header">
+          <h5 class="modal-title">Registro</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <br />
+          dni
+          <input type="text" name="dni" id="dni" />
+
+          <br />
+          nombre
+          <input type="text" name="nombre" id="nombre" />
+          <br />
+          edad
+          <input type="number" name="edad" id="edad" />
+          <br />
+          <br />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn1 btn-secondary" data-dismiss="modal">
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+  <script>
+    $(document).on('click', '.btn1', function (ev) {
+      $.ajax({
+        url: 'http://127.0.0.1:8000/api/RegistrarEmpleado',
+        method: 'POST',
+        data: $('#fconsulta1').serialize(),
+
+        success: function (data) {
+          var res = data
+
+          //   console.log(res.msj)
+          if (res.msj === 1) {
+            //res.rpta[0].Mensaje
+            alert('registro correcto')
+            window.location.href = 'index.html'
+            //   listadoEmpleado()
+            // location.reload()
+          } else if (res.msj === 4) {
+            console.log(res.erro.dni[0])
+            alert('verifique dni:' + res.erro.dni[0])
+          }
+          // $('#verConsultaExamen').html(res);
+          //  alert(data)
+          // location.reload()
+        },
+      })
+    })
+  </script>
+</html>
